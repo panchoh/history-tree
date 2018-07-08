@@ -15,21 +15,51 @@ type hash struct {
 	value [sha256.Size]byte
 }
 
+type commitment struct {
+	hash
+}
+
 type hisTree struct {
-	version uint64
-	nodes   map[pos]hash
-	hasher  func(data []byte) [sha256.Size]byte
+	version     uint64
+	height      uint64
+	rootPos     pos
+	nextRootPos pos
+	nodes       map[pos]hash
+	hasher      func(data []byte) [sha256.Size]byte
 }
 
 // NewHisTree returns a new (emtpy) hisTree
 func NewHisTree() *hisTree {
 	return &hisTree{
-		version: 0,
-		nodes:   make(map[pos]hash),
-		hasher:  sha256.New(),
+		version: -1,
+		height:  1,
+		rootPos: {
+			i: 0,
+			r: 1,
+		},
+		nextRootPos: {
+			i: 0,
+			r: 2,
+		},
+		nodes:  make(map[pos]hash),
+		hasher: sha256.New(),
 	}
 }
 
-func (ht *hisTree) Add() hash {
+func (ht *hisTree) bumpVersion() {
+	ht.version++
+}
+
+func (ht *hisTree) GetHasher() func(data []byte) [sha256.Size]byte {
+	return ht.hasher
+}
+
+func (ht *hisTree) Add(e *Event) (commitment, err) {
+	//	Identify current root
+}
+
+func (ht *hisTree) add(e *Event) (commitment, err) {
 
 }
+
+// https://en.wikipedia.org/wiki/Tree_traversal
