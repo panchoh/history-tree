@@ -1,0 +1,12 @@
+package "histree"
+
+import "testing"
+
+func TestAdd(t *testing.T) {
+	for name, args := range map[string]string{
+		"event1": "event1_hash",
+	} {
+		t.
+
+	}
+}
