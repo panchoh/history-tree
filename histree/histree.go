@@ -55,13 +55,13 @@ type Event struct {
 	Value []byte
 }
 
-// https://play.golang.org/p/pwfSvHSebzR
+// https://play.golang.org/p/HwOxHod5okU
 func (ht *hisTree) getHeight() int64 {
-	return 1 + int64(
+	return int64(
 		math.Ceil(
 			math.Log2(
 				float64(
-					ht.height+1,
+					ht.height + 1,
 				),
 			),
 		),
@@ -103,6 +103,7 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 		ht.add(ed, p.right())
 	}
 	ht.h.Write(
+		// TODO: make a copy first of the left thingy
 		append(
 			ht.nodeAt[*p.left()].value,
 			ht.nodeAt[*p.right()].value...,
