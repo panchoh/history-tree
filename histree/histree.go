@@ -98,14 +98,14 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 		ht.nodeAt[*p] = *ed
 		return
 	} else if ht.version <= p.i {
-		ht.add(ed, p.leftSon())
+		ht.add(ed, p.left())
 	} else {
-		ht.add(ed, p.rightSon())
+		ht.add(ed, p.right())
 	}
 	ht.h.Write(
 		append(
-			ht.nodeAt[*p.leftSon()].value,
-			ht.nodeAt[*p.rightSon()].value...,
+			ht.nodeAt[*p.left()].value,
+			ht.nodeAt[*p.right()].value...,
 		),
 	)
 	d := ht.h.Sum(nil)

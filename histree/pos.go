@@ -13,7 +13,7 @@ func (p *pos) isLeaf() bool {
 	return p.r == 0
 }
 
-func (p *pos) leftSon() *pos {
+func (p *pos) left() *pos {
 	if p.isLeaf() {
 		log.Fatal("ERROR: Cannot go any deeper!")
 	}
@@ -24,7 +24,7 @@ func (p *pos) leftSon() *pos {
 	}
 }
 
-func (p *pos) rightSon() *pos {
+func (p *pos) right() *pos {
 	return &pos{
 		i: p.i,
 		r: p.i + int64(math.Pow(2, float64(p.r-1))),
