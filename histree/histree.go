@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"hash"
+	"math"
 )
 
 type digest struct {
@@ -54,9 +55,26 @@ type Event struct {
 	Value []byte
 }
 
+// https://play.golang.org/p/pwfSvHSebzR
+func (ht *hisTree) getHeight() int64 {
+	return 1 + int64(
+		math.Ceil(
+			math.Log2(
+				float64(
+					ht.height+1,
+				),
+			),
+		),
+	)
+}
+
 func (ht *hisTree) Add(e *Event) *commitment {
 	//	TODO: Identify current root
 	ht.bumpVersion()
+	ht.rootPos = pos{
+		i: 0,
+		r: ht.getHeight(),
+	}
 	ht.h.Write(e.Value)
 	d := ht.h.Sum(nil)
 	ht.add(
