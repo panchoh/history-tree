@@ -9,8 +9,9 @@ import (
 func main() {
 	ht := histree.NewHisTree()
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 5; i++ {
 		event := fmt.Sprintf("Event #%d", i)
+		fmt.Println("\nAdding event", i)
 		commitment := ht.Add(
 			&histree.Event{
 				Value: []byte(event),

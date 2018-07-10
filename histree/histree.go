@@ -17,29 +17,17 @@ type commitment struct {
 }
 
 type hisTree struct {
-	version     int64
-	height      int64
-	rootPos     pos
-	nextRootPos pos
-	nodeAt      map[pos]digest
-	h           hash.Hash
+	version int64
+	nodeAt  map[pos]digest
+	h       hash.Hash
 }
 
 // NewHisTree returns a new (emtpy) hisTree
 func NewHisTree() *hisTree {
 	return &hisTree{
 		version: -1,
-		height:  0,
-		rootPos: pos{
-			i: 0,
-			r: 0,
-		},
-		nextRootPos: pos{
-			i: 0,
-			r: 1,
-		},
-		nodeAt: make(map[pos]digest),
-		h:      sha256.New(),
+		nodeAt:  make(map[pos]digest),
+		h:       sha256.New(),
 	}
 }
 
@@ -61,7 +49,7 @@ func (ht *hisTree) getHeight() int64 {
 		math.Ceil(
 			math.Log2(
 				float64(
-					ht.height + 1,
+					ht.version + 1,
 				),
 			),
 		),
@@ -69,12 +57,13 @@ func (ht *hisTree) getHeight() int64 {
 }
 
 func (ht *hisTree) Add(e *Event) *commitment {
-	//	TODO: Identify current root
 	ht.bumpVersion()
-	ht.rootPos = pos{
+	fmt.Printf("hisTree: '%v'\n", ht)
+	rootPos := pos{
 		i: 0,
 		r: ht.getHeight(),
 	}
+	fmt.Printf("rootPos: '%v'\n", rootPos)
 	ht.h.Write(e.Value)
 	d := ht.h.Sum(nil)
 	ht.add(
@@ -82,30 +71,40 @@ func (ht *hisTree) Add(e *Event) *commitment {
 			algo:  "sha256",
 			value: d,
 		},
-		&ht.rootPos,
+		&rootPos,
 	)
-	fmt.Printf("Dump tree '%v'\n", ht.nodeAt)
+	// fmt.Printf("Dump tree '%v'\n", ht.nodeAt)
+	for k, v := range ht.nodeAt {
+		fmt.Printf("Key: '%v', Value: '%v'\n", k, v)
+	}
 	return &commitment{
 		digest{
 			algo:  "sha256",
-			value: ht.nodeAt[ht.rootPos].value,
+			value: ht.nodeAt[rootPos].value,
 		},
 	}
 }
 
 func (ht *hisTree) add(ed *digest, p *pos) {
+	fmt.Println("add: starting...")
 	if p.isLeaf() {
+		fmt.Println("add: isLeaf")
 		ht.nodeAt[*p] = *ed
 		return
 	} else if ht.version <= p.i {
+		fmt.Println("add: left!")
 		ht.add(ed, p.left())
 	} else {
+		fmt.Println("add: right!")
 		ht.add(ed, p.right())
 	}
+
+	// lv := append([]byte(nil), ht.nodeAt[*p.left()].value...)
+	lv := make([]byte, len(ht.nodeAt[*p.left()].value))
+	copy(lv, ht.nodeAt[*p.left()].value)
 	ht.h.Write(
-		// TODO: make a copy first of the left thingy
 		append(
-			ht.nodeAt[*p.left()].value,
+			lv,
 			ht.nodeAt[*p.right()].value...,
 		),
 	)
@@ -114,17 +113,6 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 		algo:  "sha256",
 		value: d,
 	}
-}
-
-func cat(l, r []byte) (buf []byte) {
-	for i, v := range l {
-		buf[i] = v
-	}
-	offset := len(l)
-	for i, v := range r {
-		buf[offset+i] = v
-	}
-	return
 }
 
 // https://en.wikipedia.org/wiki/Tree_traversal
