@@ -133,5 +133,6 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 	}
 }
 
+// TODO: Ensure we are using hash.Hash correctly (when is Reset() needed?)
 // https://en.wikipedia.org/wiki/Tree_traversal
 // https://en.wikipedia.org/wiki/Binary_search_tree
