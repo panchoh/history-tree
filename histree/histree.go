@@ -20,7 +20,12 @@ type commitment struct {
 type hisTree struct {
 	version int64
 	nodeAt  map[pos]digest
-	h       hash.Hash
+	hashFunc
+}
+
+type hashFunc struct {
+	h    hash.Hash
+	algo string
 }
 
 // NewHisTree returns a new (emtpy) hisTree
@@ -28,7 +33,10 @@ func NewHisTree() *hisTree {
 	return &hisTree{
 		version: -1,
 		nodeAt:  make(map[pos]digest),
-		h:       sha256.New(),
+		hashFunc: hashFunc{
+			h:    sha256.New(),
+			algo: "SHA-256",
+		},
 	}
 }
 
@@ -36,8 +44,8 @@ func (ht *hisTree) bumpVersion() {
 	ht.version++
 }
 
-func (ht *hisTree) GetHash() hash.Hash {
-	return ht.h
+func (ht *hisTree) GetHashFun() hash.Hash {
+	return ht.hashFunc.h
 }
 
 type Event struct {
@@ -65,11 +73,11 @@ func (ht *hisTree) Add(e *Event) *commitment {
 		r: ht.getHeight(),
 	}
 	fmt.Printf("rootPos: '%v'\n", rootPos)
-	ht.h.Write(e.Value)
-	d := ht.h.Sum(nil)
+	ht.hashFunc.h.Write(e.Value)
+	d := ht.hashFunc.h.Sum(nil)
 	ht.add(
 		&digest{
-			algo:  "sha256",
+			algo:  ht.hashFunc.algo,
 			value: d,
 		},
 		&rootPos,
@@ -80,7 +88,7 @@ func (ht *hisTree) Add(e *Event) *commitment {
 	}
 	return &commitment{
 		Digest: digest{
-			algo:  "sha256",
+			algo:  ht.hashFunc.algo,
 			value: ht.nodeAt[rootPos].value,
 		},
 		Version: ht.version,
@@ -104,15 +112,15 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 	// lv := append([]byte(nil), ht.nodeAt[*p.left()].value...)
 	lv := make([]byte, len(ht.nodeAt[*p.left()].value))
 	copy(lv, ht.nodeAt[*p.left()].value)
-	ht.h.Write(
+	ht.hashFunc.h.Write(
 		append(
 			lv,
 			ht.nodeAt[*p.right()].value...,
 		),
 	)
-	d := ht.h.Sum(nil)
+	d := ht.hashFunc.h.Sum(nil)
 	ht.nodeAt[*p] = digest{
-		algo:  "sha256",
+		algo:  ht.hashFunc.algo,
 		value: d,
 	}
 }
