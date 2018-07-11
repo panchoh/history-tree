@@ -13,7 +13,8 @@ type digest struct {
 }
 
 type commitment struct {
-	digest
+	Digest  digest
+	Version int64
 }
 
 type hisTree struct {
@@ -78,10 +79,11 @@ func (ht *hisTree) Add(e *Event) *commitment {
 		fmt.Printf("Key: '%v', Value: '%v'\n", k, v)
 	}
 	return &commitment{
-		digest{
+		Digest: digest{
 			algo:  "sha256",
 			value: ht.nodeAt[rootPos].value,
 		},
+		Version: ht.version,
 	}
 }
 

@@ -17,6 +17,11 @@ func main() {
 				Value: []byte(event),
 			},
 		)
-		fmt.Printf("Added event '%s', and received commitment '%v'\n", event, commitment)
+		fmt.Printf(
+			"Added event '%s', and received commitment with Version '%d' and Digest '%v'\n",
+			event,
+			commitment.Version,
+			commitment.Digest,
+		)
 	}
 }
