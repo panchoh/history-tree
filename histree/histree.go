@@ -73,7 +73,11 @@ func (ht *hisTree) Add(e *Event) *commitment {
 		r: ht.getHeight(),
 	}
 	fmt.Printf("rootPos: '%v'\n", rootPos)
-	ht.hashFunc.h.Write(e.Value)
+	n, err := ht.hashFunc.h.Write(e.Value)
+	if err != nil {
+		fmt.Println("ERROR: Add: hash.Hasher() returned error", err)
+	}
+	fmt.Printf("Add: hash.Hash() returned '%d' bytes.\n", n)
 	d := ht.hashFunc.h.Sum(nil)
 	ht.add(
 		&digest{
@@ -112,12 +116,16 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 	// lv := append([]byte(nil), ht.nodeAt[*p.left()].value...)
 	lv := make([]byte, len(ht.nodeAt[*p.left()].value))
 	copy(lv, ht.nodeAt[*p.left()].value)
-	ht.hashFunc.h.Write(
+	n, err := ht.hashFunc.h.Write(
 		append(
 			lv,
 			ht.nodeAt[*p.right()].value...,
 		),
 	)
+	fmt.Printf("add: hash.Hasher.Write() returned '%d' bytes.\n", n)
+	if err != nil {
+		fmt.Println("ERROR: hash.Hash.Write() failed with error", err)
+	}
 	d := ht.hashFunc.h.Sum(nil)
 	ht.nodeAt[*p] = digest{
 		algo:  ht.hashFunc.algo,
