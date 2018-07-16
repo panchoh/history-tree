@@ -113,6 +113,16 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 		ht.add(ed, p.right())
 	}
 
+	ht.rehash(p)
+}
+
+func (ht *hisTree) rehash(p *pos) {
+	// Should never happen
+	if p.isLeaf() {
+		fmt.Println("rehash: Cannot rehash a leaf!")
+		return
+	}
+
 	// lv := append([]byte(nil), ht.nodeAt[*p.left()].value...)
 	lv := make([]byte, len(ht.nodeAt[*p.left()].value))
 	copy(lv, ht.nodeAt[*p.left()].value)
@@ -122,7 +132,7 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 			ht.nodeAt[*p.right()].value...,
 		),
 	)
-	fmt.Printf("add: hash.Hasher.Write() returned '%d' bytes.\n", n)
+	fmt.Printf("rehash: hash.Hasher.Write() returned '%d' bytes.\n", n)
 	if err != nil {
 		fmt.Println("ERROR: hash.Hash.Write() failed with error", err)
 	}
