@@ -28,7 +28,7 @@ type hashFunc struct {
 	algo string
 }
 
-// NewHisTree returns a new (emtpy) hisTree
+// NewHisTree returns a new (empty) hisTree
 func NewHisTree() *hisTree {
 	return &hisTree{
 		version: -1,
