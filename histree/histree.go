@@ -124,6 +124,7 @@ func (ht *hisTree) rehash(p *pos) {
 	}
 
 	// lv := append([]byte(nil), ht.nodeAt[*p.left()].value...)
+	// TODO: maybe just use sha256.Size
 	lv := make([]byte, len(ht.nodeAt[*p.left()].value))
 	copy(lv, ht.nodeAt[*p.left()].value)
 	n, err := ht.hashFunc.h.Write(
@@ -144,5 +145,6 @@ func (ht *hisTree) rehash(p *pos) {
 }
 
 // TODO: Ensure we are using hash.Hash correctly (when is Reset() needed?)
+// TODO: On the main project, evaluate having one hash writer per tree, to improve performance
 // https://en.wikipedia.org/wiki/Tree_traversal
 // https://en.wikipedia.org/wiki/Binary_search_tree
