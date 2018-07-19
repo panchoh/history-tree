@@ -26,7 +26,7 @@ func (p *pos) left() *pos {
 
 func (p *pos) right() *pos {
 	return &pos{
-		i: p.i + int64(math.Pow(2, float64(p.r-1))),
+		i: p.sortKey(),
 		r: p.r - 1,
 	}
 }
