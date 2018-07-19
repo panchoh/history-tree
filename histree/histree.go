@@ -105,7 +105,7 @@ func (ht *hisTree) add(ed *digest, p *pos) {
 		fmt.Println("add: isLeaf")
 		ht.nodeAt[*p] = *ed
 		return
-	} else if ht.version <= p.i {
+	} else if ht.version <= p.sortKey() {
 		fmt.Println("add: left!")
 		ht.add(ed, p.left())
 	} else {
