@@ -30,3 +30,7 @@ func (p *pos) right() *pos {
 		r: p.r - 1,
 	}
 }
+
+func (p *pos) sortKey() int64 {
+	return p.i + int64(math.Pow(2, float64(p.r-1)))
+}
