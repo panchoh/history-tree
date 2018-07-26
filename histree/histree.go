@@ -145,6 +145,5 @@ func (ht *hisTree) rehash(p *pos) {
 }
 
 // TODO: Ensure we are using hash.Hash correctly (when is Reset() needed?)
-// TODO: On the main project, evaluate having one hash writer per tree, to improve performance
 // https://en.wikipedia.org/wiki/Tree_traversal
 // https://en.wikipedia.org/wiki/Binary_search_tree
